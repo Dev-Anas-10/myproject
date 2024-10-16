@@ -17,12 +17,12 @@ spec:
       nodeSelector:
         zone: us-east-1a
       initContainers:
-      - name: busybox
+      - name: init-busybox
         image: busybox:latest
-        args: ["rm", "-rf", "/var/lib/mysql/lost+found"]
+        command: ["sh", "-c", "rm -rf /var/lib/mysql/lost+found"]
         volumeMounts:
         - name: vprodb
-          mountPath: /var/lib/mysql  # Corrected path (should be /var/lib/mysql for MySQL)
+          mountPath: /var/lib/mysql  
       containers:
       - name: vprodb
         image: kubeanas/projectdb
@@ -38,13 +38,14 @@ spec:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: secret           # The secret this value comes from.
-              key: MYSQL_ROOT_PASSWORD # The key to fetch.
+              name: secret           
+              key: MYSQL_ROOT_PASSWORD 
         volumeMounts:
-        - name: vprodb    # Name of the volume to mount
-          mountPath: /var/lib/mysql  # Corrected path (should be /var/lib/mysql for MySQL)
+        - name: vprodb
+          mountPath: /var/lib/mysql  
       volumes:
       - name: vprodb
         awsElasticBlockStore:
           volumeID: vol-061d29d8578a7792f
           fsType: ext4
+      restartPolicy: Always   
