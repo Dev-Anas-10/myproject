@@ -15,12 +15,12 @@ spec:
         app: app
     spec:
       initContainers:
-      - name: wait-for-vpromq01
-        image: busybox:latest
-        command: ['sh', '-c', 'until nslookup vpromq01; do echo "Waiting for RabbitMQ..."; sleep 2; done;']
-      - name: wait-for-vprodb
-        image: busybox:latest
-        command: ['sh', '-c', 'until nslookup vprodb; do echo "Waiting for MySQL..."; sleep 2; done;']
+      - name: init-mydb
+        image: busybox
+        command: ['sh', '-c', 'until nslookup vprodb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mydb; sleep 2; done;']
+      - name: init-memcache
+        image: busybox
+        command: ['sh', '-c', 'until nslookup vprocache01.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mydb; sleep 2; done;']
       containers:
       - name: app
         image: kubeanas/projectapp
