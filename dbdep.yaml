@@ -22,7 +22,7 @@ spec:
         command: ["sh", "-c", "rm -rf /var/lib/mysql/lost+found"]
         volumeMounts:
         - name: vprodb
-          mountPath: /var/lib/mysql  
+          mountPath: /var/lib/mysql
       containers:
       - name: vprodb
         image: kubeanas/projectdb
@@ -38,14 +38,13 @@ spec:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: secret           
-              key: MYSQL_ROOT_PASSWORD 
+              name: secret
+              key: MYSQL_ROOT_PASSWORD
         volumeMounts:
         - name: vprodb
-          mountPath: /var/lib/mysql  
+          mountPath: /var/lib/mysql
       volumes:
       - name: vprodb
         awsElasticBlockStore:
           volumeID: vol-061d29d8578a7792f
           fsType: ext4
-      restartPolicy: Always   
