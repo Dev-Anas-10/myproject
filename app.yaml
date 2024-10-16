@@ -14,19 +14,15 @@ spec:
       labels:
         app: app
     spec:
-      initContainers:
-      - name: wait-for-vprocache01
-        image: busybox:latest
-        command: ['sh', '-c', 'until nslookup vprocache01; do echo "Waiting for Memcached..."; sleep 2; done;']
-      - name: wait-for-vpromq01
-        image: busybox:latest
-        command: ['sh', '-c', 'until nslookup vpromq01; do echo "Waiting for RabbitMQ..."; sleep 2; done;']
-      - name: wait-for-vprodb
-        image: busybox:latest
-        command: ['sh', '-c', 'until nslookup vprodb; do echo "Waiting for MySQL..."; sleep 2; done;']
       containers:
       - name: app
         image: kubeanas/projectapp
         ports:
         - name: app-port
           containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
