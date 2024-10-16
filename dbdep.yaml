@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vprodb
+  labels:
+    app: vprodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vprodb
+  template:
+    metadata:
+      labels:
+        app: vprodb
+    spec:
+      nodeSelector:
+        zone: us-east-1a
+      initContainers:
+      - name: busybox
+        image: busybox:latest
+        args: ["rm", "-rf", "/var/lib/mysql/lost+found"]
+        volumeMounts:
+        - name: vprodb
+          mountPath: /var/lib/mysql  # Corrected path (should be /var/lib/mysql for MySQL)
+      containers:
+      - name: vprodb
+        image: kubeanas/projectdb
+        ports:
+        - name: vprodb-port
+          containerPort: 3306
+        env:
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: configmap
+              key: MYSQL_DATABASE
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: secret           # The secret this value comes from.
+              key: MYSQL_ROOT_PASSWORD # The key to fetch.
+        volumeMounts:
+        - name: vprodb    # Name of the volume to mount
+          mountPath: /var/lib/mysql  # Corrected path (should be /var/lib/mysql for MySQL)
+      volumes:
+      - name: vprodb
+        awsElasticBlockStore:
+          volumeID: vol-061d29d8578a7792f
+          fsType: ext4

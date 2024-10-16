@@ -1,5 +1,0 @@
-{
-    "yaml.schemas": {
-        "kubernetes://schema/v1@secret": "file:///c%3A/Users/anasa/OneDrive/Desktop/myproject/myproject/myproject-secret.yaml"
-    }
-}
